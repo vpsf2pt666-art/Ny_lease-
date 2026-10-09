@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NY Lease Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root {
+    --bg: #f4f2ec; --surface: #ffffff; --surface-2: #faf9f5; --text: #1b1a17; --muted: #6b685f; --border: #e4e0d5;
+    --brand: #13315c; --brand-2: #1d4a85; --brand-soft: #e7eef8; --on-brand: #ffffff; --gold: #c99a2e;
+    --high: #b42318; --high-bg: #fdecea; --med: #9a5b05; --med-bg: #fdf3e2; --low: #2f6b3a; --low-bg: #e8f3eb;
+    --shadow: 0 1px 2px rgba(20, 20, 15, .05), 0 6px 24px rgba(20, 20, 15, .06);
+    --serif: "Fraunces", Georgia, serif; --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111214; --surface: #1a1c1f; --surface-2: #202327; --text: #ecebe6; --muted: #a09d94; --border: #2e3136;
+      --brand: #8db8ef; --brand-2: #a9c9f3; --brand-soft: #1b2738; --on-brand: #0b1626; --gold: #e0b75a;
+      --high: #f2867b; --high-bg: #3a1d1a; --med: #f0b660; --med-bg: #352916; --low: #84c792; --low-bg: #1a2d1f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 24px rgba(0, 0, 0, .25);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15.5px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: var(--brand-2); }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; }
+
+  /* Header */
+  header { background: #13315c; color: #fff; }
+  .bar { max-width: 1200px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.2rem; font-weight: 600; color: #fff; text-decoration: none; }
+  .logo svg { flex: none; }
+  .helpline { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); color: #fff; text-decoration: none; padding: 7px 14px; border-radius: 999px; font-size: .9rem; }
+  .helpline strong { color: #f3cf7a; }
+  .hero { max-width: 1200px; margin: 0 auto; padding: 28px 20px 40px; }
+  .hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 10px; max-width: 18em; color: #fff; }
+  .hero p { margin: 0; max-width: 40em; color: #c9d6ea; font-size: 1.05rem; }
+  .steps { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 20px; color: #dfe7f3; font-size: .9rem; }
+  .steps span { display: inline-flex; align-items: center; gap: 8px; }
+  .steps b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #f3cf7a; color: #13315c; font-size: .75rem; }
+
+  /* Layout */
+  .layout { max-width: 1200px; margin: -22px auto 0; padding: 0 20px 64px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+  @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; box-shadow: var(--shadow); }
+
+  /* Form */
+  .drop { border: 1.5px dashed var(--border); border-radius: 12px; padding: 18px; text-align: center; background: var(--surface-2); cursor: pointer; transition: border-color .15s, background .15s; }
+  .drop:hover, .drop.over { border-color: var(--brand-2); background: var(--brand-soft); }
+  .drop strong { color: var(--brand-2); }
+  .drop input { display: none; }
+  .or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; margin: 16px 0; }
+  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+  label { display: block; font-weight: 600; font-size: .85rem; margin: 0 0 6px; }
+  textarea, input, select { width: 100%; font: inherit; font-size: .92rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  textarea:focus, input:focus, select:focus { outline: 2px solid var(--brand-2); outline-offset: -1px; }
+  textarea { min-height: 200px; resize: vertical; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 18px; }
+  .hint { color: var(--muted); font-size: .85rem; }
+  .btn { font: inherit; font-weight: 600; background: var(--brand); color: var(--on-brand); border: 0; border-radius: 10px; padding: 13px 24px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
+  .btn:hover { background: var(--brand-2); }
+  .btn:disabled { opacity: .7; cursor: wait; }
+  .spinner { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 20px; }
+  .error { color: var(--high); background: var(--high-bg); border-radius: 10px; padding: 10px 14px; margin-top: 14px; }
+  .notice { font-size: .82rem; color: var(--muted); margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--border); }
+
+  /* Results */
+  #results h2 { font-size: 1.3rem; margin: 34px 0 12px; display: flex; align-items: center; gap: 10px; }
+  .verdict { display: flex; gap: 18px; align-items: flex-start; }
+  .verdict .badge { flex: none; width: 64px; height: 64px; border-radius: 14px; display: grid; place-items: center; font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; text-align: center; line-height: 1.2; }
+  .pill { display: inline-block; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 3px 10px; border-radius: 999px; font-family: var(--sans); }
+  .high { color: var(--high); background: var(--high-bg); }
+  .medium { color: var(--med); background: var(--med-bg); }
+  .low { color: var(--low); background: var(--low-bg); }
+  .terms { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .term { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .term .k { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+  .issue { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .issue.sev-high { border-left-color: var(--high); }
+  .issue.sev-medium { border-left-color: var(--med); }
+  .issue.sev-low { border-left-color: var(--low); }
+  .issue h3 { font-size: 1.08rem; margin: 8px 0 6px; }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: .8rem; color: var(--muted); }
+  blockquote { margin: 10px 0; padding: 8px 14px; background: var(--surface-2); border-radius: 8px; color: var(--muted); font-size: .9rem; font-style: italic; }
+  .law { font-size: .85rem; margin-top: 8px; color: var(--muted); }
+  .todo { background: var(--brand-soft); border-radius: 8px; padding: 9px 13px; font-size: .92rem; margin-top: 10px; }
+  ul.clean { padding-left: 20px; margin: 0; }
+  ul.clean li { margin-bottom: 6px; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .chip { font: inherit; font-size: .85rem; padding: 6px 14px; border-radius: 999px; background: var(--surface); color: var(--text); border: 1px solid var(--border); cursor: pointer; }
+  .chip.on { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }
+
+  /* Sidebar */
+  aside { position: sticky; top: 16px; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 16px; }
+  .tab { font: inherit; font-size: .88rem; font-weight: 600; border: 0; background: transparent; color: var(--muted); padding: 8px; border-radius: 7px; cursor: pointer; }
+  .tab.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  .side-h { font-family: var(--sans); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 18px 0 8px; font-weight: 700; }
+  .side-h:first-child { margin-top: 0; }
+  .lawlist { list-style: none; padding: 0; margin: 0; }
+  .lawlist li { border-bottom: 1px solid var(--border); }
+  .lawlist li:last-child { border-bottom: 0; }
+  .lawlist a { display: block; padding: 9px 0; text-decoration: none; color: var(--text); }
+  .lawlist a:hover .t { color: var(--brand-2); text-decoration: underline; }
+  .lawlist .t { font-weight: 600; font-size: .9rem; }
+  .lawlist .d { font-size: .8rem; color: var(--muted); line-height: 1.45; }
+  .callout { background: #13315c; color: #fff; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .callout .lbl { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: #c9d6ea; font-weight: 700; }
+  .callout .num { font-family: var(--serif); font-size: 2rem; font-weight: 600; color: #f3cf7a; text-decoration: none; display: block; line-height: 1.2; margin: 4px 0; }
+  .callout p { margin: 0; font-size: .85rem; color: #dfe7f3; }
+  .contact { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .contact:last-child { border-bottom: 0; }
+  .contact .t { font-weight: 600; font-size: .9rem; }
+  .contact a.tel { font-weight: 700; text-decoration: none; }
+  .contact .d { font-size: .8rem; color: var(--muted); line-height: 1.45; }
+  .emergency { font-size: .82rem; background: var(--high-bg); color: var(--high); border-radius: 10px; padding: 10px 12px; margin-top: 14px; }
+
+  [hidden] { display: none !important; }
+  @media print { header, form, aside, .filters, #printBtn { display: none !important; } .layout { display: block; margin: 0; } .card, .issue { box-shadow: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <a class="logo" href="/">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f3cf7a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></svg>
+      NY Lease Review
+    </a>
+    <a class="helpline" href="tel:311">NYC Tenant Helpline: <strong>call 311</strong></a>
+  </div>
+  <div class="hero">
+    <h1>Know what you're signing before you sign it.</h1>
+    <p>Upload your New York apartment lease. We'll flag clauses that are unfair, unusual or against NY tenant law, and tell you what to ask your landlord.</p>
+    <div class="steps"><span><b>1</b>Upload or paste your lease</span><span><b>2</b>Get a plain-English review</span><span><b>3</b>Negotiate with confidence</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <main>
+    <form id="form" class="card">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept=".pdf,.txt,text/plain,application/pdf">
+        <div><strong>Choose a file</strong> or drag it here</div>
+        <div class="hint" id="fileStatus">PDF or .txt. For scanned images, paste the text below.</div>
+      </label>
+      <div class="or">or paste it</div>
+      <label for="lease">Lease text</label>
+      <textarea id="lease" placeholder="Paste the full lease here…"></textarea>
+
+      <div class="row">
+        <div>
+          <label for="location">Where is the apartment?</label>
+          <select id="location">
+            <option value="">Not sure</option>
+            <option>New York City</option>
+            <option>Nassau, Westchester or Rockland County</option>
+            <option>Elsewhere in New York State</option>
+          </select>
+        </div>
+        <div>
+          <label for="regulated">Rent-stabilized?</label>
+          <select id="regulated">
+            <option value="">Don't know</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div>
+          <label for="leaseType">This lease is…</label>
+          <select id="leaseType">
+            <option value="">Not specified</option>
+            <option>A new lease</option>
+            <option>A renewal</option>
+            <option>A sublease</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <label for="concerns">Anything you're worried about? <span class="hint">(optional)</span></label>
+        <input id="concerns" placeholder="e.g. Can I have a roommate? Is the broker fee legal?">
+      </div>
+      <div id="pwWrap" style="margin-top:16px" hidden>
+        <label for="password">Access password</label>
+        <input id="password" type="password" autocomplete="current-password">
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn" id="submit">Review my lease</button>
+        <span class="hint">Usually takes 30–60 seconds.</span>
+      </div>
+      <div id="error" class="error" hidden></div>
+      <p class="notice">This tool gives general information about New York tenant law. It is not legal advice and it can make mistakes. Your lease is sent to an AI service for processing and is not stored by this site. For advice about your situation, use the free resources in the <a href="#" data-open="help">Get help</a> tab.</p>
+    </form>
+
+    <section id="results" hidden>
+      <h2>Overview</h2>
+      <div class="card verdict"><div class="badge" id="risk"></div><div id="summary"></div></div>
+
+      <h2>Key terms</h2>
+      <div class="terms" id="terms"></div>
+
+      <h2>Issues found</h2>
+      <div class="filters" id="filters"></div>
+      <div id="issues"></div>
+
+      <div id="missingWrap"><h2>Possibly missing disclosures</h2><div class="card"><ul class="clean" id="missing"></ul></div></div>
+      <div id="goodWrap"><h2>Tenant-friendly terms</h2><div class="card"><ul class="clean" id="good"></ul></div></div>
+      <div id="qWrap"><h2>Questions to ask your landlord</h2><div class="card"><ul class="clean" id="questions"></ul></div></div>
+      <div id="caveatWrap"><h2>Caveats</h2><div class="card" id="caveats"></div></div>
+
+      <div class="actions"><button type="button" class="btn" id="printBtn" onclick="window.print()">Print / save as PDF</button></div>
+    </section>
+  </main>
+
+  <aside class="card">
+    <div class="tabs" role="tablist">
+      <button class="tab on" role="tab" data-tab="laws" aria-selected="true">Tenant laws</button>
+      <button class="tab" role="tab" data-tab="help" aria-selected="false">Get help</button>
+    </div>
+
+    <div id="tab-laws">
+      <div class="side-h">Guides</div>
+      <ul class="lawlist">
+        <li><a href="https://ag.ny.gov/publications/residential-tenants-rights-guide" target="_blank" rel="noopener"><div class="t">Residential Tenants' Rights Guide</div><div class="d">NY Attorney General's plain-English overview</div></a></li>
+        <li><a href="https://rentguidelinesboard.cityofnewyork.us/resources/faqs/rent-stabilization/" target="_blank" rel="noopener"><div class="t">Rent stabilization FAQs</div><div class="d">NYC Rent Guidelines Board</div></a></li>
+        <li><a href="https://hcr.ny.gov/good-cause-eviction" target="_blank" rel="noopener"><div class="t">Good Cause Eviction Law (2024)</div><div class="d">Limits on non-renewal and large rent increases</div></a></li>
+        <li><a href="https://www.nyc.gov/site/hpd/services-and-information/tenants-rights-and-responsibilities.page" target="_blank" rel="noopener"><div class="t">NYC tenants' rights</div><div class="d">NYC Housing Preservation &amp; Development</div></a></li>
+      </ul>
+      <div class="side-h">The laws themselves</div>
+      <ul class="lawlist">
+        <li><a href="https://www.nysenate.gov/legislation/laws/GOB/7-108" target="_blank" rel="noopener"><div class="t">Security deposits · GOL §7-108</div><div class="d">Max one month's rent, returned within 14 days</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/238-A" target="_blank" rel="noopener"><div class="t">Fees &amp; late charges · RPL §238-a</div><div class="d">$20 application fee cap; late fee max $50 or 5%</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/235-B" target="_blank" rel="noopener"><div class="t">Warranty of habitability · RPL §235-b</div><div class="d">Landlord must keep the home livable; can't be waived</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/226-C" target="_blank" rel="noopener"><div class="t">Notice of non-renewal · RPL §226-c</div><div class="d">30, 60 or 90 days' notice depending on tenancy length</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/235-F" target="_blank" rel="noopener"><div class="t">Roommate Law · RPL §235-f</div><div class="d">Your right to live with family and a roommate</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/226-B" target="_blank" rel="noopener"><div class="t">Subletting · RPL §226-b</div><div class="d">Right to request a sublet in buildings with 4+ units</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/227-E" target="_blank" rel="noopener"><div class="t">Breaking a lease · RPL §227-e</div><div class="d">Landlord must try to re-rent if you leave early</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP/234" target="_blank" rel="noopener"><div class="t">Attorney's fees · RPL §234</div><div class="d">If the landlord can recover fees, so can you</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/GOB/5-905" target="_blank" rel="noopener"><div class="t">Auto-renewal clauses · GOL §5-905</div><div class="d">Unenforceable without advance written reminder</div></a></li>
+        <li><a href="https://www.nysenate.gov/legislation/laws/RPP" target="_blank" rel="noopener"><div class="t">Full NY Real Property Law</div><div class="d">NY Senate official text</div></a></li>
+      </ul>
+    </div>
+
+    <div id="tab-help" hidden>
+      <div class="callout">
+        <div class="lbl">NYC Tenant Helpline</div>
+        <a class="num" href="tel:311">311</a>
+        <p>Ask for the <strong>Tenant Helpline</strong>. Free and confidential, in any language. Outside NYC, call <a href="tel:+12126399675" style="color:#f3cf7a">212-639-9675</a>.</p>
+      </div>
+      <div class="contact">
+        <div class="t">NYS Attorney General: Tenant Protection</div>
+        <a class="tel" href="tel:+18007717755">1-800-771-7755</a>
+        <div class="d">Complaints about illegal lease terms, deposits and fees</div>
+      </div>
+      <div class="contact">
+        <div class="t">NYS Homes &amp; Community Renewal: Rent Administration</div>
+        <a class="tel" href="tel:+17187396400">718-739-6400</a>
+        <div class="d">Rent-stabilized apartments, rent history, overcharges</div>
+      </div>
+      <div class="contact">
+        <div class="t">Housing Court Answers</div>
+        <a class="tel" href="tel:+12129624795">212-962-4795</a>
+        <div class="d">Free hotline for tenants facing eviction or housing court</div>
+      </div>
+      <div class="contact">
+        <div class="t">Met Council on Housing tenant hotline</div>
+        <a class="tel" href="tel:+12129790611">212-979-0611</a>
+        <div class="d">Tenant-rights advice from a nonprofit tenant union</div>
+      </div>
+      <div class="contact">
+        <div class="t">LawHelpNY</div>
+        <a href="https://www.lawhelpny.org" target="_blank" rel="noopener">lawhelpny.org</a>
+        <div class="d">Find free legal aid near you, statewide</div>
+      </div>
+      <div class="emergency">Being locked out or having your belongings removed is illegal. In an emergency, call <strong>911</strong>.</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  fetch("/api/config").then((r) => r.json()).then((c) => { $("pwWrap").hidden = !c.passwordRequired; }).catch(() => {});
+
+  // Sidebar tabs
+  function openTab(name) {
+    document.querySelectorAll(".tab").forEach((t) => { const on = t.dataset.tab === name; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); });
+    $("tab-laws").hidden = name !== "laws";
+    $("tab-help").hidden = name !== "help";
+  }
+  document.querySelectorAll(".tab").forEach((t) => t.onclick = () => openTab(t.dataset.tab));
+  document.querySelectorAll("[data-open]").forEach((a) => a.onclick = (e) => { e.preventDefault(); openTab(a.dataset.open); document.querySelector("aside").scrollIntoView({ behavior: "smooth" }); });
+
+  // Turn citations like "RPL §235-b" or "GOL §7-108" into links to the official text
+  const CODES = { RPL: "RPP", GOL: "GOB", RPAPL: "RPA" };
+  const linkLaw = (s) => esc(s).replace(/\b(RPAPL|RPL|GOL)\s*§\s*(\d+(?:-[a-z])?(?:-\d+)?)/gi, (m, code, sec) =>
+    `<a href="https://www.nysenate.gov/legislation/laws/${CODES[code.toUpperCase()]}/${sec.toUpperCase()}" target="_blank" rel="noopener">${m}</a>`);
+
+  // File upload (click or drag)
+  async function readFile(f) {
+    $("fileStatus").textContent = "Reading file…";
+    try {
+      let text = "";
+      if (f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")) {
+        const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const content = await (await pdf.getPage(i)).getTextContent();
+          text += content.items.map((it) => it.str + (it.hasEOL ? "\n" : " ")).join("") + "\n\n";
+        }
+      } else {
+        text = await f.text();
+      }
+      text = text.trim();
+      $("lease").value = text;
+      $("fileStatus").textContent = text.length > 200
+        ? `Loaded ${f.name} (${text.length.toLocaleString()} characters)`
+        : "Couldn't find much text. If it's a scanned PDF, paste the text instead.";
+    } catch {
+      $("fileStatus").textContent = "Couldn't read that file. Paste the text instead.";
+    }
+  }
+  $("file").addEventListener("change", (e) => e.target.files[0] && readFile(e.target.files[0]));
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", (e) => e.dataTransfer.files[0] && readFile(e.dataTransfer.files[0]));
+
+  // Results
+  let currentFilter = "all";
+  let lastResult = null;
+
+  function renderIssues() {
+    const issues = (lastResult.issues || []).filter((i) => currentFilter === "all" || i.severity === currentFilter);
+    $("issues").innerHTML = issues.length ? issues.map((i) => `
+      <article class="issue sev-${esc(i.severity)}">
+        <div class="meta"><span class="pill ${esc(i.severity)}">${esc(i.severity)}</span><span>${esc(i.category)}</span><span>· ${esc(i.enforceable)}</span></div>
+        <h3>${esc(i.title)}</h3>
+        ${i.clause ? `<blockquote>“${esc(i.clause)}”</blockquote>` : ""}
+        <div>${esc(i.explanation)}</div>
+        ${i.law ? `<div class="law">Law: ${linkLaw(i.law)}</div>` : ""}
+        ${i.action ? `<div class="todo"><strong>What to do:</strong> ${esc(i.action)}</div>` : ""}
+      </article>`).join("") : `<p class="hint">No issues at this level.</p>`;
+  }
+
+  function list(id, wrap, items, withLinks) {
+    $(wrap).hidden = !(items && items.length);
+    $(id).innerHTML = (items || []).map((x) => `<li>${withLinks ? linkLaw(x) : esc(x)}</li>`).join("");
+  }
+
+  function render(r) {
+    lastResult = r;
+    const risk = ["low", "medium", "high"].includes(r.overallRisk) ? r.overallRisk : "medium";
+    $("risk").className = "badge " + risk;
+    $("risk").textContent = risk + " risk";
+    $("summary").textContent = r.summary || "";
+    $("terms").innerHTML = (r.keyTerms || []).map((t) => `<div class="term"><div class="k">${esc(t.label)}</div><div>${esc(t.value)}</div></div>`).join("");
+
+    const counts = { high: 0, medium: 0, low: 0 };
+    (r.issues || []).forEach((i) => { if (i.severity in counts) counts[i.severity]++; });
+    const opts = [["all", `All (${(r.issues || []).length})`], ["high", `High (${counts.high})`], ["medium", `Medium (${counts.medium})`], ["low", `Low (${counts.low})`]];
+    $("filters").innerHTML = opts.map(([k, l]) => `<button type="button" class="chip ${k === currentFilter ? "on" : ""}" data-f="${k}">${l}</button>`).join("");
+    $("filters").querySelectorAll(".chip").forEach((b) => b.onclick = () => {
+      currentFilter = b.dataset.f;
+      $("filters").querySelectorAll(".chip").forEach((x) => x.classList.toggle("on", x === b));
+      renderIssues();
+    });
+    renderIssues();
+
+    list("missing", "missingWrap", r.missingDisclosures, true);
+    list("good", "goodWrap", r.goodTerms);
+    list("questions", "qWrap", r.questionsForLandlord);
+    $("caveatWrap").hidden = !r.caveats;
+    $("caveats").textContent = r.caveats || "";
+    $("results").hidden = false;
+    $("results").scrollIntoView({ behavior: "smooth" });
+  }
+
+  $("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("error").hidden = true;
+    const btn = $("submit");
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span>Reviewing your lease…`;
+    try {
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lease: $("lease").value,
+          password: $("password").value,
+          context: { location: $("location").value, regulated: $("regulated").value, leaseType: $("leaseType").value, concerns: $("concerns").value },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+      currentFilter = "all";
+      render(data);
+    } catch (err) {
+      $("error").textContent = err.message;
+      $("error").hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Review my lease";
+    }
+  });
+</script>
+</body>
+</html>

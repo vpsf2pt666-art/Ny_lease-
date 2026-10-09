@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ny-lease-review
+    runtime: python
+    plan: free
+    buildCommand: echo "No dependencies to install"
+    startCommand: python server.py
+    healthCheckPath: /api/config
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: OPENROUTER_API_KEY
+        sync: false # Render asks you to paste this in during setup
+      - key: OPENROUTER_MODEL
+        value: anthropic/claude-sonnet-5.5
+      - key: MAX_REVIEWS_PER_HOUR
+        value: "10"
+      - key: MAX_REVIEWS_PER_DAY
+        value: "100"
